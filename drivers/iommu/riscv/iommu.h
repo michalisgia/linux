@@ -23,6 +23,24 @@
 
 #include "iommu-bits.h"
 
+struct riscv_iommu_queue {
+	dma_addr_t base_dma;	/* ring buffer bus address */
+	void *base;		/* ring buffer pointer */
+	size_t len;		/* single item length */
+	u32 cnt;		/* items count */
+	u32 lui;		/* last used index, consumer/producer share */
+	unsigned int qbr;	/* queue base register offset */
+	unsigned int qcr;	/* queue control and status register offset */
+	int irq;		/* registered interrupt number */
+	bool in_iomem;		/* indicates queue data are in I/O memory  */
+};
+
+enum riscv_queue_ids {
+	RISCV_IOMMU_COMMAND_QUEUE	= 0,
+	RISCV_IOMMU_FAULT_QUEUE		= 1,
+	RISCV_IOMMU_PAGE_REQUEST_QUEUE	= 2
+};
+
 struct riscv_iommu_device {
 	struct iommu_device iommu;	/* iommu core interface */
 	struct device *dev;		/* iommu hardware */
@@ -37,6 +55,11 @@ struct riscv_iommu_device {
 	int irq_pm;
 	int irq_priq;
 
+	/* Queue lengths */
+	int cmdq_len;
+	int fltq_len;
+	int priq_len;
+
 	/* supported and enabled hardware capabilities */
 	u64 cap;
 
@@ -47,6 +70,11 @@ struct riscv_iommu_device {
 	unsigned long ddtp;
 	unsigned int ddt_mode;
 	bool ddtp_in_iomem;
+
+	/* hardware queues */
+	struct riscv_iommu_queue cmdq;
+	struct riscv_iommu_queue fltq;
+	struct riscv_iommu_queue priq;
 
 	/* Connected end-points */
 	struct rb_root eps;
