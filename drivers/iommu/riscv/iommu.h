@@ -23,6 +23,11 @@
 
 #include "iommu-bits.h"
 
+#define IOMMU_PAGE_SIZE_4K     BIT_ULL(12)
+#define IOMMU_PAGE_SIZE_2M     BIT_ULL(21)
+#define IOMMU_PAGE_SIZE_1G     BIT_ULL(30)
+#define IOMMU_PAGE_SIZE_512G   BIT_ULL(39)
+
 struct riscv_iommu_queue {
 	dma_addr_t base_dma;	/* ring buffer bus address */
 	void *base;		/* ring buffer pointer */
@@ -83,11 +88,13 @@ struct riscv_iommu_device {
 
 struct riscv_iommu_domain {
 	struct iommu_domain domain;
+	struct io_pgtable pgtbl;
 
 	struct list_head endpoints;
 	struct mutex lock;
 	struct riscv_iommu_device *iommu;
 
+	bool is_32bit;		/* SXL/GXL 32-bit modes enabled */
 	unsigned int mode;	/* RIO_ATP_MODE_* enum */
 	unsigned int pscid;	/* RISC-V IOMMU PSCID */
 
