@@ -333,7 +333,7 @@ static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cm
 						  u64 addr)
 {
 	cmd->dword0 |= RISCV_IOMMU_CMD_IOTINVAL_AV;
-	cmd->dword1 = addr;
+	cmd->dword1 = (addr >> 2);
 }
 
 static inline void riscv_iommu_cmd_inval_set_pscid(struct riscv_iommu_command *cmd,
