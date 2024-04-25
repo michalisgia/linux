@@ -26,6 +26,7 @@
 #include <linux/of_platform.h>
 #include <linux/of_mdio.h>
 #include <linux/of_net.h>
+#include <linux/platform_device.h>
 #include <linux/phy.h>
 #include <linux/interrupt.h>
 #include <linux/version.h>
